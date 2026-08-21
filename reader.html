@@ -122,6 +122,8 @@
 
         const params = new URLSearchParams(window.location.search);
         const surahNum = Number(params.get("surah") || 1);
+        // حفظ آخر سورة تم فتحها
+localStorage.setItem('wardakLastSurah', surahNum);
 
         document.addEventListener("DOMContentLoaded", async () => {
             // تفعيل الوضع الليلي
