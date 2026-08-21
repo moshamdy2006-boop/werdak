@@ -116,7 +116,7 @@
     <!-- عنصر الصوت -->
     <audio id="quranAudio" preload="metadata"></audio>
 
-    <!-- الكود البرمجي المدمج لضمان عمل الأيقونات والتفسير مباشرة -->
+    <!-- الكود البرمجي المدمج لضمان عمل الأيقونات والتفسير والصوت مباشرة -->
     <script type="module">
         import { getSurah } from "./api.js";
 
@@ -144,10 +144,11 @@
             };
 
             try {
-                // جلب نص السورة والتفسير الميسر معاً
-                const [surahData, tafsirData] = await Promise.all([
+                // جلب نص السورة، والتفسير الميسر، والتلاوة الصوتية معاً
+                const [surahData, tafsirData, audioData] = await Promise.all([
                     getSurah(surahNum, "quran-uthmani"),
-                    getSurah(surahNum, "ar.muyassar")
+                    getSurah(surahNum, "ar.muyassar"),
+                    getSurah(surahNum, "ar.minshawi") // إضافة جلب الصوت
                 ]);
 
                 document.getElementById("surahName").textContent = surahData.name;
@@ -173,10 +174,10 @@
                         </div>
                     `;
 
-                    // برمجة زر التشغيل
+                    // برمجة زر التشغيل للصوت باستخدام المصدر الصحيح
                     article.querySelector(".play-btn").onclick = () => {
                         const audio = document.getElementById("quranAudio");
-                        audio.src = ayah.audio;
+                        audio.src = audioData.ayahs[index].audio;
                         audio.play();
                     };
 
