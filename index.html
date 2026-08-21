@@ -16,7 +16,74 @@
         href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Amiri:wght@400;700&display=swap"
         rel="stylesheet">
 
-    <link rel="stylesheet" href="style.css?v=4">
+    <link rel="stylesheet" href="style.css?v=6">
+
+    <!-- ستايل إظهار الروابط العادية على الموبايل وإلغاء القائمة المنسدلة -->
+    <style>
+        @media (max-width: 700px) {
+
+            /* إظهار الروابط وتصغير حجمها قليلاً لتناسب الشاشة */
+            .nav-links {
+                display: flex !important;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 12px !important;
+                font-size: 14px;
+                width: 100%;
+            }
+
+            /* إعادة ترتيب الهيدر ليكون اللوجو فوق والروابط تحته */
+            .nav {
+                height: auto !important;
+                flex-direction: column;
+                padding: 15px 0;
+                gap: 12px;
+                position: relative;
+            }
+
+            /* تثبيت زر الوضع الليلي في أعلى اليسار */
+            .header-actions {
+                position: absolute;
+                top: 15px;
+                left: 15px;
+            }
+
+            /* إخفاء زر القائمة نهائياً */
+            .mobile-menu-btn {
+                display: none !important;
+            }
+        }
+
+        /* زر الرجوع لأعلى */
+        #scrollTopBtn {
+            display: none;
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 99;
+            font-size: 18px;
+            border: none;
+            outline: none;
+            background-color: var(--primary);
+            color: white;
+            cursor: pointer;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(13, 107, 80, 0.4);
+            transition: 0.3s;
+        }
+
+        #scrollTopBtn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-3px);
+        }
+
+        body.dark #scrollTopBtn {
+            background-color: var(--gold);
+            color: var(--primary-dark);
+        }
+    </style>
 </head>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0d6b50">
@@ -30,6 +97,8 @@
                 <span class="logo-icon">۞</span>
                 <span>وِردك</span>
             </a>
+
+            <!-- الروابط ستظهر الآن على الموبايل واللاب توب معاً -->
             <nav class="nav-links">
                 <a href="#home">الرئيسية</a>
                 <a href="#plan">خطتي</a>
@@ -37,18 +106,10 @@
                 <a href="#ask">اسأل القرآن</a>
                 <a href="#about">عن وِردك</a>
             </nav>
+
             <div class="header-actions">
                 <button class="theme-btn" id="themeBtn" title="الوضع الليلي">☾</button>
-                <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
             </div>
-        </div>
-
-        <div class="mobile-menu" id="mobileMenu">
-            <a href="#home">الرئيسية</a>
-            <a href="#plan">خطتي</a>
-            <a href="mushaf.html">المصحف المصور</a>
-            <a href="#ask">اسأل القرآن</a>
-            <a href="#about">عن وِردك</a>
         </div>
     </header>
 
@@ -65,7 +126,6 @@
                         <a href="#plan" class="btn btn-primary">ابدأ رحلتي <span>←</span></a>
                         <a href="mushaf.html" class="btn btn-secondary">المصحف المصور</a>
                         <a href="#ask" class="btn btn-secondary">اسأل القرآن</a>
-                        <!-- زر أكمل القراءة -->
                         <button onclick="Wardak.resumeReading()" class="btn btn-secondary"
                             style="border-color: var(--gold); color: var(--gold-dark);">أكمل القراءة ⟳</button>
                     </div>
@@ -309,9 +369,8 @@
         </section>
     </main>
 
-    <!-- زر الرجوع لأعلى (مدمج بستايل مباشر عشان مايبوظش أي حاجة) -->
-    <button onclick="scrollToTop()" id="scrollTopBtn" title="الرجوع للأعلى"
-        style="display:none; position:fixed; bottom:30px; left:30px; z-index:99; font-size:18px; background:var(--primary); color:white; border:none; width:45px; height:45px; border-radius:50%; box-shadow:0 4px 15px rgba(13,107,80,0.4); cursor:pointer;">↑</button>
+    <!-- زر الرجوع لأعلى -->
+    <button onclick="scrollToTop()" id="scrollTopBtn" title="الرجوع للأعلى">↑</button>
 
     <!-- ================= FOOTER ================= -->
     <footer class="footer">
@@ -343,7 +402,7 @@
     </div>
 
     <!-- Scripts -->
-    <script src="script.js?v=4"></script>
+    <script src="script.js?v=6"></script>
     <script type="module" src="api.js"></script>
 
     <!-- كود جلب السور -->
@@ -404,26 +463,7 @@
         }
     </script>
 
-    <!-- كود قائمة الموبايل النظيف -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const btn = document.getElementById('mobileMenuBtn');
-            const menu = document.getElementById('mobileMenu');
-
-            if (btn && menu) {
-                btn.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    menu.classList.toggle('active');
-                });
-
-                menu.querySelectorAll('a').forEach(function (link) {
-                    link.addEventListener('click', function () {
-                        menu.classList.remove('active');
-                    });
-                });
-            }
-        });
-
         // زر الرجوع لأعلى
         window.onscroll = function () {
             let mybutton = document.getElementById("scrollTopBtn");
