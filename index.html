@@ -16,7 +16,8 @@
         href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Amiri:wght@400;700&display=swap"
         rel="stylesheet">
 
-    <link rel="stylesheet" href="style.css">
+    <!-- خدعة الـ v=2 لإجبار الموبايل على التحديث -->
+    <link rel="stylesheet" href="style.css?v=2">
 </head>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0d6b50">
@@ -335,41 +336,11 @@
         <p id="toastMessage">تم الحفظ بنجاح</p>
     </div>
 
-    <!-- Scripts Fixed Here -->
-    <script src="script.js"></script>
-    <script type="module" src="api.js"></script>
+    <!-- خدعة الـ v=2 لإجبار الموبايل على قراءة السكريبت الجديد -->
+    <script src="script.js?v=2"></script>
+    <script type="module" src="api.js?v=2"></script>
 
     <!-- كود جلب السور وعرضها في الصفحة الرئيسية -->
-    <script type="module">
-        import { getSurahs } from './api.js';
-
-        async function loadSurahsToHome() {
-            const grid = document.getElementById('surahGrid');
-            if (!grid) return;
-
-            try {
-                const surahs = await getSurahs();
-                grid.innerHTML = surahs.map(s => `
-                    <a href="reader.html?surah=${s.number}" class="surah-card">
-                        <div class="surah-number-badge" style="width:40px;height:40px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;border-radius:10px;font-weight:bold;">
-                            ${s.number}
-                        </div>
-                        <div class="surah-main">
-                            <h3>${s.name}</h3>
-                            <p>${s.englishName}</p>
-                            <small>${s.revelationType === 'Meccan' ? 'مكية' : 'مدنية'} • ${s.numberOfAyahs} آية</small>
-                        </div>
-                        <div class="surah-open"><span>←</span> قراءة</div>
-                    </a>
-                `).join('');
-            } catch (error) {
-                grid.innerHTML = '<div class="empty error-box" style="color:red; text-align:center;">حدث خطأ أثناء تحميل السور. يرجى التحقق من اتصالك بالإنترنت.</div>';
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', loadSurahsToHome);
-
-    </script>
     <script type="module">
         import { getSurahs } from './api.js';
 
@@ -425,24 +396,6 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js');
-            });
-        }
-    </script>
-    <script>
-        // تفعيل قائمة الموبايل بشكل مباشر وآمن
-        const mobileBtn = document.getElementById("mobileMenuBtn");
-        const mobileMenuBox = document.getElementById("mobileMenu");
-
-        if (mobileBtn && mobileMenuBox) {
-            mobileBtn.addEventListener("click", () => {
-                mobileMenuBox.classList.toggle("show");
-            });
-
-            // غلق القائمة عند الضغط على أي رابط بداخلها
-            mobileMenuBox.querySelectorAll("a").forEach(item => {
-                item.addEventListener("click", () => {
-                    mobileMenuBox.classList.remove("show");
-                });
             });
         }
     </script>
