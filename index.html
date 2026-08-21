@@ -16,24 +16,57 @@
         href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Amiri:wght@400;700&display=swap"
         rel="stylesheet">
 
-    <link rel="stylesheet" href="style.css?v=7">
+    <link rel="stylesheet" href="style.css?v=8">
 
-    <!-- ستايل إظهار الروابط العادية على الموبايل -->
+    <!-- ستايل احترافي (شيك جداً) للروابط على الموبايل -->
     <style>
         @media (max-width: 700px) {
             .nav-links {
                 display: flex !important;
                 flex-wrap: wrap;
                 justify-content: center;
-                gap: 12px !important;
-                font-size: 14px;
+                gap: 8px !important;
+                font-size: 13px;
                 width: 100%;
+                margin-top: 5px;
+            }
+
+            /* تحويل الروابط لشكل كبسولات أنيقة */
+            .nav-links a {
+                padding: 6px 16px;
+                background: var(--primary-light);
+                color: var(--primary);
+                border-radius: 20px;
+                font-weight: 700;
+                transition: 0.3s ease;
+                border: 1px solid transparent;
+            }
+
+            /* تأثير عند اللمس */
+            .nav-links a:hover {
+                background: var(--primary);
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 10px rgba(13, 107, 80, 0.2);
+            }
+
+            /* شياكة الوضع الليلي */
+            body.dark .nav-links a {
+                background: #162620;
+                color: #e2e8e5;
+                border: 1px solid #1e2f29;
+            }
+
+            body.dark .nav-links a:hover {
+                background: var(--gold);
+                color: var(--primary-dark);
+                border-color: var(--gold);
             }
 
             .nav {
                 height: auto !important;
                 flex-direction: column;
-                padding: 15px 0;
+                padding: 20px 0;
                 gap: 12px;
                 position: relative;
             }
@@ -42,6 +75,10 @@
                 position: absolute;
                 top: 15px;
                 left: 15px;
+            }
+
+            .mobile-menu-btn {
+                display: none !important;
             }
         }
 
@@ -99,10 +136,8 @@
 
             <div class="header-actions">
                 <button class="theme-btn" id="themeBtn" title="الوضع الليلي">☾</button>
-                <!-- تم مسح زرار الثلاث شرط من هنا تماماً -->
             </div>
         </div>
-        <!-- تم مسح قائمة الموبايل المنسدلة من هنا تماماً -->
     </header>
 
     <!-- ================= HERO ================= -->
@@ -394,7 +429,7 @@
     </div>
 
     <!-- Scripts -->
-    <script src="script.js?v=7"></script>
+    <script src="script.js?v=8"></script>
     <script type="module" src="api.js"></script>
 
     <!-- كود جلب السور -->
