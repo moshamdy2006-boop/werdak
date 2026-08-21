@@ -155,7 +155,7 @@ function initializeYear() {
 }
 
 /* =========================================================
-   MOBILE MENU 
+   MOBILE MENU
 ========================================================= */
 function initializeMobileMenu() {
     const button = document.getElementById("mobileMenuBtn");
@@ -221,9 +221,7 @@ function selectPlan(days) {
     setTimeout(() => {
         const section = document.querySelector(".today-section");
         if (section) {
-            section.scrollIntoView({
-                behavior: "smooth"
-            });
+            section.scrollIntoView({ behavior: "smooth" });
         }
     }, 300);
 }
@@ -379,7 +377,6 @@ function completeToday() {
     saveData(data);
     showToast("ما شاء الله، تم إكمال ورد اليوم ✓");
 
-    // مؤثرات التهنئة عند إكمال الورد
     if (typeof confetti === "function") {
         confetti({
             particleCount: 150,
@@ -634,7 +631,7 @@ function showToast(message) {
 }
 
 /* =========================================================
-   إكمال القراءة (المصحف المصور)
+   الإضافة الجديدة: دالة إكمال القراءة للمصحف المصور
 ========================================================= */
 function resumeReading() {
     const lastPage = localStorage.getItem('wardakMushafPage');
