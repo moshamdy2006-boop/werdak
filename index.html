@@ -1,660 +1,446 @@
-/* =========================================================
-وِردك - SCRIPT.JS
-الخطط + الورد + الأيام + Streak + البحث
-+ الوضع الليلي + حفظ البيانات
-========================================================= */
-
-/* =========================================================
-STORAGE
-========================================================= */
-const STORAGE_KEY = "wardakData";
-
-const DEFAULT_DATA = {
-plan: null,
-completedDays: [],
-streak: 0,
-lastCompletedDate: null,
-startDate: null
-};
-
-/* =========================================================
-GET DATA
-========================================================= */
-function getData() {
-try {
-const saved = localStorage.getItem(STORAGE_KEY);
-if (!saved) {
-return {
-...DEFAULT_DATA
-};
-}
-const data = JSON.parse(saved);
-return {
-...DEFAULT_DATA,
-...data
-};
-} catch (error) {
-console.error("Wardak storage error:", error);
-return {
-...DEFAULT_DATA
-};
-}
-}
-
-/* =========================================================
-SAVE DATA
-========================================================= */
-function saveData(data) {
-localStorage.setItem(
-STORAGE_KEY,
-JSON.stringify(data)
-);
-}
-
-/* =========================================================
-TODAY DATE
-========================================================= */
-function todayKey() {
-const date = new Date();
-const year = date.getFullYear();
-const month = String(date.getMonth() + 1).padStart(2, "0");
-const day = String(date.getDate()).padStart(2, "0");
-return `${year}-${month}-${day}`;
-}
-
-/* =========================================================
-DATE DIFFERENCE
-========================================================= */
-function dateDifference(date1, date2) {
-const first = new Date(`${date1}T00:00:00`);
-const second = new Date(`${date2}T00:00:00`);
-const difference = Math.abs(second - first);
-return Math.floor(difference / (1000 * 60 * 60 * 24));
-}
-
-/* =========================================================
-QURAN DATA
-========================================================= */
-const TOTAL_PAGES = 604;
-
-/* =========================================================
-DAILY WIRD
-========================================================= */
-function calculateWird(planDays) {
-if (!planDays) {
-return 0;
-}
-return Math.ceil(TOTAL_PAGES / planDays);
-}
-
-/* =========================================================
-TODAY NUMBER
-========================================================= */
-function getTodayNumber(data) {
-if (!data.plan) {
-return 0;
-}
-return Math.min(
-data.plan,
-data.completedDays.length + 1
-);
-}
-
-/* =========================================================
-UPDATE STREAK
-========================================================= */
-function updateStreakBeforeDisplay() {
-const data = getData();
-if (!data.lastCompletedDate) {
-return data;
-}
-const today = todayKey();
-const difference = dateDifference(data.lastCompletedDate, today);
-
-/* لو مر أكثر من يوم من آخر ورد مكتمل */
-if (difference > 1) {
-data.streak = 0;
-saveData(data);
-}
-return data;
-}
-
-/* =========================================================
-PAGE LOAD
-========================================================= */
-document.addEventListener("DOMContentLoaded", () => {
-initializeYear();
-initializeMobileMenu();
-initializePlans();
-initializeCompleteButton();
-initializeChangePlan();
-initializeAskQuran();
-initializeSuggestions();
-initializeTheme();
-updateAll();
-});
-
-/* =========================================================
-UPDATE EVERYTHING
-========================================================= */
-function updateAll() {
-updateDashboard();
-updateCurrentPlan();
-updateTodayWird();
-updateHero();
-}
-
-/* =========================================================
-YEAR
-========================================================= */
-function initializeYear() {
-const year = document.getElementById("year");
-if (year) {
-year.textContent = new Date().getFullYear();
-}
-}
-
-/* =========================================================
-MOBILE MENU
-========================================================= */
-function initializeMobileMenu() {
-const button = document.getElementById("mobileMenuBtn");
-const menu = document.getElementById("mobileMenu");
-
-if (!button || !menu) {
-return;
-}
-
-button.addEventListener("click", () => {
-menu.classList.toggle("active");
-});
-
-menu.querySelectorAll("a").forEach(link => {
-link.addEventListener("click", () => {
-menu.classList.remove("active");
-});
-});
-}
-
-/* =========================================================
-PLANS
-========================================================= */
-function initializePlans() {
-const plans = document.querySelectorAll(".plan-card");
-
-plans.forEach(card => {
-card.addEventListener("click", () => {
-const days = Number(card.dataset.plan);
-selectPlan(days);
-});
-});
-}
-
-/* =========================================================
-SELECT PLAN
-========================================================= */
-function selectPlan(days) {
-if (![30, 60, 90].includes(days)) {
-return;
-}
-
-const data = getData();
-
-/* لو أول مرة يختار خطة */
-if (!data.plan) {
-data.plan = days;
-data.startDate = todayKey();
-}
-/* لو بيغير الخطة */
-else {
-const confirmChange = confirm("هل تريد تغيير خطة الختم؟\n\nسيتم الاحتفاظ بالأيام التي أكملتها.");
-if (!confirmChange) {
-return;
-}
-data.plan = days;
-}
-
-saveData(data);
-showToast(`تم اختيار ختمة ${days} يومًا ✓`);
-updateAll();
-
-setTimeout(() => {
-const section = document.querySelector(".today-section");
-if (section) {
-section.scrollIntoView({ behavior: "smooth" });
-}
-}, 300);
-}
-
-/* =========================================================
-CURRENT PLAN
-========================================================= */
-function updateCurrentPlan() {
-const data = updateStreakBeforeDisplay();
-
-const title = document.getElementById("currentPlanTitle");
-const percent = document.getElementById("progressPercent");
-const fill = document.getElementById("progressFill");
-const days = document.getElementById("progressDays");
-const remaining = document.getElementById("remainingDays");
-
-if (!data.plan) {
-if (title) title.textContent = "لم تختر خطة بعد";
-if (percent) percent.textContent = "0%";
-if (fill) fill.style.width = "0%";
-if (days) days.textContent = "0 من 0 يوم";
-if (remaining) remaining.textContent = "متبقي 0 يوم";
-return;
-}
-
-const completed = Math.min(data.completedDays.length, data.plan);
-const percentage = Math.min(100, Math.round((completed / data.plan) * 100));
-const remainingDays = Math.max(0, data.plan - completed);
-
-if (title) title.textContent = `ختمة في ${data.plan} يومًا`;
-if (percent) percent.textContent = `${percentage}%`;
-if (fill) fill.style.width = `${percentage}%`;
-if (days) days.textContent = `${completed} من ${data.plan} يوم`;
-if (remaining) remaining.textContent = `متبقي ${remainingDays} يوم`;
-}
-
-/* =========================================================
-TODAY WIRD
-========================================================= */
-function updateTodayWird() {
-const data = updateStreakBeforeDisplay();
-
-const title = document.getElementById("todayTitle");
-const description = document.getElementById("todayDescription");
-const number = document.getElementById("todayNumber");
-const pages = document.getElementById("todayPages");
-const status = document.getElementById("todayStatus");
-const button = document.getElementById("completeBtn");
-
-if (!data.plan) {
-if (title) title.textContent = "ابدأ رحلتك باختيار خطة";
-if (description) description.textContent = "عندما تختار خطة، سيظهر هنا وردك اليومي تلقائيًا.";
-if (number) number.textContent = "-";
-if (pages) pages.textContent = "-";
-if (status) status.textContent = "لم يبدأ";
-if (button) {
-button.disabled = true;
-button.style.opacity = "0.5";
-}
-return;
-}
-
-const today = getTodayNumber(data);
-const dailyPages = calculateWird(data.plan);
-const alreadyCompleted = data.completedDays.includes(today);
-
-/* الختمة انتهت */
-if (data.completedDays.length >= data.plan) {
-if (title) title.textContent = "أتممت الختمة بحمد الله 🎉";
-if (description) description.textContent = "ما شاء الله، أنهيت رحلتك مع القرآن.";
-if (number) number.textContent = data.plan;
-if (pages) pages.textContent = "تمت الختمة";
-if (status) status.textContent = "مكتمل ✓";
-if (button) {
-button.disabled = true;
-button.style.opacity = "0.65";
-button.innerHTML = "<span>✓</span> تمت الختمة";
-}
-return;
-}
-
-if (title) title.textContent = `ورد اليوم — اليوم ${today}`;
-if (description) description.textContent = `وردك اليومي حوالي ${dailyPages} صفحة من القرآن الكريم.`;
-if (number) number.textContent = today;
-if (pages) pages.textContent = `${dailyPages} صفحة`;
-
-if (alreadyCompleted) {
-if (status) status.textContent = "تم بحمد الله ✓";
-if (button) {
-button.disabled = true;
-button.style.opacity = "0.65";
-button.innerHTML = "<span>✓</span> تم إكمال ورد اليوم";
-}
-} else {
-if (status) status.textContent = "لم يبدأ";
-if (button) {
-button.disabled = false;
-button.style.opacity = "1";
-button.innerHTML = "<span>✓</span> أكملت وردي اليوم";
-}
-}
-}
-
-/* =========================================================
-COMPLETE BUTTON
-========================================================= */
-function initializeCompleteButton() {
-const button = document.getElementById("completeBtn");
-if (!button) return;
-button.addEventListener("click", completeToday);
-}
-
-/* =========================================================
-COMPLETE TODAY
-========================================================= */
-function completeToday() {
-const data = getData();
-
-if (!data.plan) {
-showToast("اختر خطة أولًا");
-return;
-}
-
-const todayNumber = getTodayNumber(data);
-
-if (data.completedDays.includes(todayNumber)) {
-showToast("لقد أكملت ورد اليوم بالفعل ✓");
-return;
-}
-
-data.completedDays.push(todayNumber);
-const today = todayKey();
-
-if (!data.lastCompletedDate) {
-data.streak = 1;
-} else {
-const difference = dateDifference(data.lastCompletedDate, today);
-if (difference === 1) {
-data.streak += 1;
-} else if (difference === 0) {
-/* نفس اليوم */
-} else {
-data.streak = 1;
-}
-}
-
-data.lastCompletedDate = today;
-
-if (data.completedDays.length > data.plan) {
-data.completedDays = data.completedDays.slice(0, data.plan);
-}
-
-saveData(data);
-showToast("ما شاء الله، تم إكمال ورد اليوم ✓");
-
-if (typeof confetti === "function") {
-confetti({
-particleCount: 150,
-spread: 90,
-origin: { y: 0.6 },
-colors: ['#0d6b50', '#c79b4b', '#ffffff']
-});
-}
-
-updateAll();
-
-if (data.completedDays.length >= data.plan) {
-setTimeout(() => {
-showToast("🎉 ما شاء الله! أتممت الختمة");
-}, 900);
-}
-}
-
-/* =========================================================
-CHANGE PLAN
-========================================================= */
-function initializeChangePlan() {
-const button = document.getElementById("changePlanBtn");
-if (!button) return;
-button.addEventListener("click", () => {
-const section = document.getElementById("plan");
-if (section) {
-section.scrollIntoView({ behavior: "smooth" });
-}
-});
-}
-
-/* =========================================================
-DASHBOARD
-========================================================= */
-function updateDashboard() {
-const data = updateStreakBeforeDisplay();
-
-const days = document.getElementById("statDays");
-const streak = document.getElementById("statStreak");
-const goal = document.getElementById("statGoal");
-const progress = document.getElementById("statProgress");
-
-const completed = data.completedDays.length;
-const percentage = data.plan
-? Math.min(100, Math.round((completed / data.plan) * 100))
-: 0;
-
-if (days) days.textContent = completed;
-if (streak) streak.textContent = data.streak;
-if (goal) goal.textContent = data.plan ? `${data.plan} يوم` : "--";
-if (progress) progress.textContent = `${percentage}%`;
-}
-
-/* =========================================================
-HERO
-========================================================= */
-function updateHero() {
-const data = getData();
-
-const title = document.getElementById("heroSurah");
-const text = document.getElementById("heroAyah");
-const progress = document.getElementById("heroProgress");
-const progressText = document.getElementById("heroProgressText");
-
-if (!data.plan) {
-if (title) title.textContent = "ابدأ رحلتك";
-if (text) text.textContent = "اختر خطة الختم الخاصة بك";
-if (progress) progress.style.width = "0%";
-if (progressText) progressText.textContent = "0%";
-return;
-}
-
-const completed = data.completedDays.length;
-const percentage = Math.min(100, Math.round((completed / data.plan) * 100));
-const today = Math.min(data.plan, completed + 1);
-
-if (title) title.textContent = `اليوم ${today} من ${data.plan}`;
-if (text) {
-text.textContent = completed >= data.plan
-? "أتممت الختمة بحمد الله 🎉"
-: "استمر، خطوة صغيرة كل يوم";
-}
-if (progress) progress.style.width = `${percentage}%`;
-if (progressText) progressText.textContent = `${percentage}%`;
-}
-
-/* =========================================================
-ASK QURAN
-========================================================= */
-function initializeAskQuran() {
-const button = document.getElementById("askBtn");
-const input = document.getElementById("askInput");
-
-if (!button || !input) return;
-
-button.addEventListener("click", searchQuranTopic);
-input.addEventListener("keydown", event => {
-if (event.key === "Enter") {
-event.preventDefault();
-searchQuranTopic();
-}
-});
-}
-
-/* =========================================================
-SUGGESTIONS
-========================================================= */
-function initializeSuggestions() {
-const buttons = document.querySelectorAll(".suggestion");
-
-buttons.forEach(button => {
-button.addEventListener("click", () => {
-const input = document.getElementById("askInput");
-if (!input) return;
-input.value = button.textContent.trim();
-searchQuranTopic();
-});
-});
-}
-
-/* =========================================================
-ASK SEARCH
-========================================================= */
-function searchQuranTopic() {
-const input = document.getElementById("askInput");
-const result = document.getElementById("askResult");
-
-if (!input || !result) return;
-
-const query = input.value.trim().toLowerCase();
-
-if (!query) {
-result.innerHTML = `
-<div class="ask-message">
-    اكتب شعورًا أو موضوعًا تريد البحث عنه أولًا.
-</div>
-`;
-result.classList.add("show");
-return;
-}
-
-const topic = detectTopic(query);
-
-result.innerHTML = `
-<div class="ask-result-card">
-    <div class="result-icon">۞</div>
-    <div>
-        <h3>آيات حول ${topic.title}</h3>
-        <p>يمكنك قراءة هذه المواضع والتدبر فيها:</p>
-        <div class="verse-suggestions">
-            ${topic.verses.map(verse => `<span>${verse}</span>`).join("")}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>وِردك | رحلتك اليومية مع القرآن</title>
+
+    <meta name="description" content="وِردك - منصة شخصية تساعدك على تنظيم وردك اليومي وختم القرآن الكريم.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Amiri:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css?v=4">
+</head>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d6b50">
+
+<body>
+
+    <!-- ================= HEADER ================= -->
+    <header class="header">
+        <div class="container nav">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">۞</span>
+                <span>وِردك</span>
+            </a>
+            <nav class="nav-links">
+                <a href="#home">الرئيسية</a>
+                <a href="#plan">خطتي</a>
+                <a href="mushaf.html">المصحف المصور</a>
+                <a href="#ask">اسأل القرآن</a>
+                <a href="#about">عن وِردك</a>
+            </nav>
+            <div class="header-actions">
+                <button class="theme-btn" id="themeBtn" title="الوضع الليلي">☾</button>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+            </div>
         </div>
-        <a href="reader.html?surah=${topic.surah}" class="btn btn-primary" style="margin-top: 15px;">
-            قراءة السورة ←
-        </a>
+
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="#home">الرئيسية</a>
+            <a href="#plan">خطتي</a>
+            <a href="mushaf.html">المصحف المصور</a>
+            <a href="#ask">اسأل القرآن</a>
+            <a href="#about">عن وِردك</a>
+        </div>
+    </header>
+
+    <!-- ================= HERO ================= -->
+    <main id="home">
+        <section class="hero">
+            <div class="hero-pattern"></div>
+            <div class="container hero-content">
+                <div class="hero-text">
+                    <div class="small-badge">✦ رحلتك مع القرآن تبدأ اليوم</div>
+                    <h1>اجعل لك <span>وِردًا</span> لا ينقطع</h1>
+                    <p>وِردك يساعدك على بناء عادة يومية مع القرآن، ويحوّل هدف ختم القرآن إلى رحلة واضحة خطوة بخطوة.</p>
+                    <div class="hero-buttons">
+                        <a href="#plan" class="btn btn-primary">ابدأ رحلتي <span>←</span></a>
+                        <a href="mushaf.html" class="btn btn-secondary">المصحف المصور</a>
+                        <a href="#ask" class="btn btn-secondary">اسأل القرآن</a>
+                        <!-- زر أكمل القراءة -->
+                        <button onclick="Wardak.resumeReading()" class="btn btn-secondary"
+                            style="border-color: var(--gold); color: var(--gold-dark);">أكمل القراءة ⟳</button>
+                    </div>
+                </div>
+
+                <div class="hero-card">
+                    <div class="card-top">
+                        <span>ورد اليوم</span>
+                        <span class="status-dot">● اليوم</span>
+                    </div>
+                    <div class="quran-icon">۞</div>
+                    <h3 id="heroSurah">ابدأ رحلتك</h3>
+                    <p id="heroAyah">اختر خطة الختم الخاصة بك</p>
+                    <div class="mini-progress">
+                        <div class="mini-progress-bar">
+                            <span id="heroProgress"></span>
+                        </div>
+                        <span id="heroProgressText">0%</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= STATS ================= -->
+        <section class="stats-section">
+            <div class="container stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📖</div>
+                    <div>
+                        <strong id="statDays">0</strong>
+                        <span>يوم مكتمل</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🔥</div>
+                    <div>
+                        <strong id="statStreak">0</strong>
+                        <span>يوم متتالي</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <div>
+                        <strong id="statGoal">--</strong>
+                        <span>خطة الختم</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div>
+                        <strong id="statProgress">0%</strong>
+                        <span>نسبة الإنجاز</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PLAN ================= -->
+        <section class="section" id="plan">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="section-label">خطتك</span>
+                    <h2>اختر رحلتك مع القرآن</h2>
+                    <p>اختر المدة التي تناسب وقتك، وسنحسب لك وردك اليومي تلقائيًا.</p>
+                </div>
+
+                <div class="plans-grid">
+                    <button class="plan-card" data-plan="30">
+                        <div class="plan-number">30</div>
+                        <div class="plan-info">
+                            <h3>ختمة في 30 يومًا</h3>
+                            <p>ورد يومي مكثف</p>
+                        </div>
+                        <span class="plan-arrow">←</span>
+                    </button>
+                    <button class="plan-card" data-plan="60">
+                        <div class="plan-number">60</div>
+                        <div class="plan-info">
+                            <h3>ختمة في 60 يومًا</h3>
+                            <p>ورد يومي متوسط</p>
+                        </div>
+                        <span class="plan-arrow">←</span>
+                    </button>
+                    <button class="plan-card" data-plan="90">
+                        <div class="plan-number">90</div>
+                        <div class="plan-info">
+                            <h3>ختمة في 90 يومًا</h3>
+                            <p>ورد يومي هادئ</p>
+                        </div>
+                        <span class="plan-arrow">←</span>
+                    </button>
+                </div>
+
+                <div class="current-plan" id="currentPlan">
+                    <div class="current-plan-header">
+                        <div>
+                            <span class="section-label">خطتك الحالية</span>
+                            <h3 id="currentPlanTitle">لم تختر خطة بعد</h3>
+                        </div>
+                        <button id="changePlanBtn" class="text-button">تغيير الخطة</button>
+                    </div>
+
+                    <div class="progress-area">
+                        <div class="progress-info">
+                            <span>التقدم في الختمة</span>
+                            <strong id="progressPercent">0%</strong>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-bottom">
+                            <span id="progressDays">0 من 0 يوم</span>
+                            <span id="remainingDays">متبقي 0 يوم</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TODAY ================= -->
+        <section class="section today-section">
+            <div class="container">
+                <div class="today-card">
+                    <div class="today-content">
+                        <div class="today-label">✦ ورد اليوم</div>
+                        <h2 id="todayTitle">ابدأ رحلتك باختيار خطة</h2>
+                        <p id="todayDescription">عندما تختار خطة، سيظهر هنا وردك اليومي تلقائيًا.</p>
+                        <div class="wird-details" id="wirdDetails">
+                            <div class="detail-item">
+                                <span>اليوم</span>
+                                <strong id="todayNumber">-</strong>
+                            </div>
+                            <div class="detail-item">
+                                <span>الورد</span>
+                                <strong id="todayPages">-</strong>
+                            </div>
+                            <div class="detail-item">
+                                <span>الحالة</span>
+                                <strong id="todayStatus">لم يبدأ</strong>
+                            </div>
+                        </div>
+                        <button class="complete-btn" id="completeBtn">
+                            <span>✓</span> أكملت وردي اليوم
+                        </button>
+                    </div>
+                    <div class="today-decoration">
+                        <div class="ornament">۞</div>
+                        <div class="decoration-line"></div>
+                        <p>وَرَتِّلِ الْقُرْآنَ تَرْتِيلًا</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= ASK ================= -->
+        <section class="section ask-section" id="ask">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="section-label">اسأل القرآن</span>
+                    <h2>ابحث عمّا يطمئن قلبك</h2>
+                    <p>اكتب شعورًا أو موضوعًا تريد آيات عنه، وسنقترح لك موضوعات قرآنية مناسبة.</p>
+                </div>
+                <div class="ask-box">
+                    <div class="ask-input-wrapper">
+                        <span class="search-icon">⌕</span>
+                        <input type="text" id="askInput" placeholder="مثال: أشعر بالقلق وأريد آيات عن الطمأنينة...">
+                        <button id="askBtn">بحث</button>
+                    </div>
+                    <div class="suggestions">
+                        <button class="suggestion">أشعر بالقلق</button>
+                        <button class="suggestion">أريد الصبر</button>
+                        <button class="suggestion">أحتاج الطمأنينة</button>
+                        <button class="suggestion">أريد التوبة</button>
+                        <button class="suggestion">أريد الشكر</button>
+                    </div>
+                    <div class="ask-result" id="askResult"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= FEATURES ================= -->
+        <section class="section features-section">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="section-label">لماذا وِردك؟</span>
+                    <h2>أكثر من مجرد قراءة</h2>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h3>هدف واضح</h3>
+                        <p>حدد المدة التي تريد ختم القرآن فيها واترك الباقي على وِردك.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔥</div>
+                        <h3>حافظ على الاستمرارية</h3>
+                        <p>تابع عدد الأيام المتتالية التي أتممت فيها وردك.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📈</div>
+                        <h3>تابع تقدمك</h3>
+                        <p>شاهد نسبة إنجازك والأيام المتبقية حتى إتمام الختمة.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💚</div>
+                        <h3>لا تقلق إذا فاتك يوم</h3>
+                        <p>يعيد وِردك توزيع المتبقي على الأيام القادمة بدلًا من إلغاء رحلتك.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= ABOUT ================= -->
+        <section class="section about-section" id="about">
+            <div class="container about-box">
+                <div class="about-icon">۞</div>
+                <div>
+                    <span class="section-label">عن وِردك</span>
+                    <h2>خطوة صغيرة كل يوم</h2>
+                    <p>وِردك فكرة بسيطة هدفها مساعدتك على الاستمرار في علاقتك اليومية مع القرآن. اختر هدفك، التزم بوردك،
+                        وشاهد رحلتك تكبر يومًا بعد يوم.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SURAHS ================= -->
+        <section class="section surahs-section">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="section-label">القرآن الكريم</span>
+                    <h2>السور</h2>
+                    <p>اختر السورة لفتح المصحف والقراءة والاستماع.</p>
+                </div>
+                <div class="surah-search">
+                    <input type="text" id="surahSearch" placeholder="ابحث عن سورة...">
+                </div>
+                <div class="surah-grid" id="surahGrid">
+                    <div class="empty">جاري تحميل السور...</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- زر الرجوع لأعلى (مدمج بستايل مباشر عشان مايبوظش أي حاجة) -->
+    <button onclick="scrollToTop()" id="scrollTopBtn" title="الرجوع للأعلى"
+        style="display:none; position:fixed; bottom:30px; left:30px; z-index:99; font-size:18px; background:var(--primary); color:white; border:none; width:45px; height:45px; border-radius:50%; box-shadow:0 4px 15px rgba(13,107,80,0.4); cursor:pointer;">↑</button>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-brand">
+                <div class="logo">
+                    <span class="logo-icon">۞</span>
+                    <span>وِردك</span>
+                </div>
+                <p>رحلتك اليومية مع القرآن.</p>
+            </div>
+            <div class="footer-links">
+                <a href="#home">الرئيسية</a>
+                <a href="#plan">خطتي</a>
+                <a href="mushaf.html">المصحف المصور</a>
+                <a href="#ask">اسأل القرآن</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>جميع الحقوق محفوظة © <span id="year"></span> — وِردك</p>
+            <p class="creator">تصميم وتطوير <strong>مصطفى حمدي</strong></p>
+        </div>
+    </footer>
+
+    <!-- ================= TOAST ================= -->
+    <div class="toast" id="toast">
+        <span>✓</span>
+        <p id="toastMessage">تم الحفظ بنجاح</p>
     </div>
-</div>
-`;
 
-result.classList.add("show");
+    <!-- Scripts -->
+    <script src="script.js?v=4"></script>
+    <script type="module" src="api.js"></script>
 
-setTimeout(() => {
-result.scrollIntoView({ behavior: "smooth", block: "center" });
-}, 100);
-}
+    <!-- كود جلب السور -->
+    <script type="module">
+        import { getSurahs } from './api.js';
 
-/* =========================================================
-TOPIC DETECTION
-========================================================= */
-function detectTopic(text) {
-const query = text.toLowerCase().replace(/أ|إ|آ/g, "ا");
+        async function loadSurahsToHome() {
+            const grid = document.getElementById('surahGrid');
+            const searchInput = document.getElementById('surahSearch');
+            if (!grid) return;
 
-if (query.includes("قلق") || query.includes("خوف") || query.includes("طمأن") || query.includes("سكين") ||
-query.includes("راحة") || query.includes("حزن") || query.includes("حزين") || query.includes("ضيق") ||
-query.includes("هم")) {
-return { title: "الطمأنينة والسكينة", surah: 13, verses: ["الرعد: 28", "الشرح: 5-6", "البقرة: 286"] };
-}
-if (query.includes("صبر") || query.includes("اصبر") || query.includes("تحمل") || query.includes("ابتلاء")) {
-return { title: "الصبر والثبات", surah: 2, verses: ["البقرة: 153", "البقرة: 286", "الزمر: 10"] };
-}
-if (query.includes("توب") || query.includes("ذنب") || query.includes("ذنوب") || query.includes("مغفر") ||
-query.includes("معص")) {
-return { title: "التوبة والمغفرة", surah: 39, verses: ["الزمر: 53", "الفرقان: 70", "التحريم: 8"] };
-}
-if (query.includes("شكر") || query.includes("نعمه") || query.includes("نعم")) {
-return { title: "الشكر والنعم", surah: 14, verses: ["إبراهيم: 7", "النحل: 18", "الضحى: 11"] };
-}
-if (query.includes("رزق") || query.includes("مال") || query.includes("فقر") || query.includes("فلوس") ||
-query.includes("عمل")) {
-return { title: "الرزق والتوكل", surah: 51, verses: ["الذاريات: 58", "هود: 6", "الطلاق: 2-3"] };
-}
-if (query.includes("هدا") || query.includes("طريق") || query.includes("ضلال") || query.includes("صح")) {
-return { title: "الهداية والثبات", surah: 1, verses: ["الفاتحة: 6", "البقرة: 2", "الأنعام: 153"] };
-}
-if (query.includes("امل") || query.includes("ياس") || query.includes("مستقبل") || query.includes("احباط") ||
-query.includes("فشل")) {
-return { title: "الأمل وعدم اليأس", surah: 39, verses: ["الزمر: 53", "يوسف: 87", "الشرح: 5-6"] };
-}
-if (query.includes("حب") || query.includes("محبه")) {
-return { title: "المحبة", surah: 3, verses: ["آل عمران: 31", "المائدة: 54", "البقرة: 165"] };
-}
-if (query.includes("صلاه") || query.includes("صلاة")) {
-return { title: "الصلاة", surah: 2, verses: ["البقرة: 43", "العنكبوت: 45", "المؤمنون: 1-2"] };
-}
-if (query.includes("موت") || query.includes("اخره") || query.includes("قيامه")) {
-return { title: "الآخرة وتذكر المصير", surah: 75, verses: ["القيامة: 1-15", "الحديد: 20", "آل عمران: 185"] };
-}
+            try {
+                const surahs = await getSurahs();
 
-return { title: "التدبر والسكينة", surah: 94, verses: ["الشرح: 5-6", "الضحى: 3-5", "الرعد: 28"] };
-}
+                const renderGrid = (surahsList) => {
+                    if (surahsList.length === 0) {
+                        grid.innerHTML = '<div class="empty">لا توجد سورة بهذا الاسم...</div>';
+                        return;
+                    }
+                    grid.innerHTML = surahsList.map(s => `
+                        <a href="reader.html?surah=${s.number}" class="surah-card">
+                            <div class="surah-number-badge" style="width:40px;height:40px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;border-radius:10px;font-weight:bold;">
+                                ${s.number}
+                            </div>
+                            <div class="surah-main">
+                                <h3>${s.name}</h3>
+                                <p>${s.englishName}</p>
+                                <small>${s.revelationType === 'Meccan' ? 'مكية' : 'مدنية'} • ${s.numberOfAyahs} آية</small>
+                            </div>
+                            <div class="surah-open"><span>←</span> قراءة</div>
+                        </a>
+                    `).join('');
+                };
 
-/* =========================================================
-DARK MODE
-========================================================= */
-function initializeTheme() {
-const buttons = document.querySelectorAll("#themeBtn, .theme-btn, #themeToggle, #darkModeBtn, [data-theme-toggle],
-[data-action='theme']");
+                renderGrid(surahs);
 
-const savedTheme = localStorage.getItem("wardakTheme");
+                if (searchInput) {
+                    searchInput.addEventListener('input', (e) => {
+                        const term = e.target.value.trim();
+                        const filtered = surahs.filter(s => s.name.includes(term));
+                        renderGrid(filtered);
+                    });
+                }
 
-if (savedTheme === "dark") {
-document.body.classList.add("dark");
-}
+            } catch (error) {
+                grid.innerHTML = '<div class="empty error-box" style="color:red; text-align:center;">حدث خطأ أثناء تحميل السور. يرجى التحقق من اتصالك بالإنترنت.</div>';
+            }
+        }
 
-buttons.forEach(button => {
-button.addEventListener("click", toggleTheme);
-});
-}
+        document.addEventListener('DOMContentLoaded', loadSurahsToHome);
+    </script>
 
-/* =========================================================
-TOGGLE DARK MODE
-========================================================= */
-function toggleTheme() {
-document.body.classList.toggle("dark");
-const dark = document.body.classList.contains("dark");
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js');
+            });
+        }
+    </script>
 
-localStorage.setItem("wardakTheme", dark ? "dark" : "light");
-showToast(dark ? "تم تفعيل الوضع الليلي 🌙" : "تم إيقاف الوضع الليلي ☀️");
-}
+    <!-- كود قائمة الموبايل النظيف -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const btn = document.getElementById('mobileMenuBtn');
+            const menu = document.getElementById('mobileMenu');
 
-/* =========================================================
-TOAST
-========================================================= */
-function showToast(message) {
-const toast = document.getElementById("toast");
-const toastMessage = document.getElementById("toastMessage");
+            if (btn && menu) {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    menu.classList.toggle('active');
+                });
 
-if (!toast) return;
-if (toastMessage) toastMessage.textContent = message;
+                menu.querySelectorAll('a').forEach(function (link) {
+                    link.addEventListener('click', function () {
+                        menu.classList.remove('active');
+                    });
+                });
+            }
+        });
 
-toast.classList.add("show");
-clearTimeout(window.wardakToastTimer);
+        // زر الرجوع لأعلى
+        window.onscroll = function () {
+            let mybutton = document.getElementById("scrollTopBtn");
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                mybutton.style.display = "block";
+            } else {
+                mybutton.style.display = "none";
+            }
+        };
 
-window.wardakToastTimer = setTimeout(() => {
-toast.classList.remove("show");
-}, 2500);
-}
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
 
-/* =========================================================
-الإضافة الجديدة: دالة إكمال القراءة للمصحف المصور
-========================================================= */
-function resumeReading() {
-const lastPage = localStorage.getItem('wardakMushafPage');
-if (lastPage) {
-window.location.href = "mushaf.html";
-} else {
-showToast("جاري فتح المصحف المصور...");
-setTimeout(() => {
-window.location.href = "mushaf.html";
-}, 800);
-}
-}
+    <!-- مكتبة الاحتفال -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</body>
 
-/* =========================================================
-PUBLIC API
-========================================================= */
-window.Wardak = {
-getData, saveData, selectPlan, completeToday, updateDashboard,
-updateCurrentPlan, updateTodayWird, updateHero, toggleTheme, searchQuranTopic, resumeReading
-};
+</html>
