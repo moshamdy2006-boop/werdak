@@ -428,6 +428,24 @@
             });
         }
     </script>
+    <script>
+        // تفعيل قائمة الموبايل بشكل مباشر وآمن
+        const mobileBtn = document.getElementById("mobileMenuBtn");
+        const mobileMenuBox = document.getElementById("mobileMenu");
+
+        if (mobileBtn && mobileMenuBox) {
+            mobileBtn.addEventListener("click", () => {
+                mobileMenuBox.classList.toggle("show");
+            });
+
+            // غلق القائمة عند الضغط على أي رابط بداخلها
+            mobileMenuBox.querySelectorAll("a").forEach(item => {
+                item.addEventListener("click", () => {
+                    mobileMenuBox.classList.remove("show");
+                });
+            });
+        }
+    </script>
 </body>
 
 </html>
