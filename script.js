@@ -155,7 +155,7 @@ function initializeYear() {
 }
 
 /* =========================================================
-   MOBILE MENU
+   MOBILE MENU 
 ========================================================= */
 function initializeMobileMenu() {
     const button = document.getElementById("mobileMenuBtn");
@@ -166,12 +166,12 @@ function initializeMobileMenu() {
     }
 
     button.addEventListener("click", () => {
-        menu.classList.toggle("show");
+        menu.classList.toggle("active");
     });
 
     menu.querySelectorAll("a").forEach(link => {
         link.addEventListener("click", () => {
-            menu.classList.remove("show");
+            menu.classList.remove("active");
         });
     });
 }
@@ -378,8 +378,8 @@ function completeToday() {
 
     saveData(data);
     showToast("ما شاء الله، تم إكمال ورد اليوم ✓");
-    
-    // الإضافة الجديدة: إطلاق مؤثرات التهنئة عند إكمال الورد
+
+    // مؤثرات التهنئة عند إكمال الورد
     if (typeof confetti === "function") {
         confetti({
             particleCount: 150,
@@ -634,14 +634,17 @@ function showToast(message) {
 }
 
 /* =========================================================
-   الإضافة الجديدة: دالة إكمال القراءة
+   إكمال القراءة (المصحف المصور)
 ========================================================= */
 function resumeReading() {
-    const lastSurah = localStorage.getItem('wardakLastSurah');
-    if (lastSurah) {
-        window.location.href = `reader.html?surah=${lastSurah}`;
+    const lastPage = localStorage.getItem('wardakMushafPage');
+    if (lastPage) {
+        window.location.href = "mushaf.html";
     } else {
-        showToast("لم تقم بفتح أي سورة مؤخراً للعودة إليها!");
+        showToast("جاري فتح المصحف المصور...");
+        setTimeout(() => {
+            window.location.href = "mushaf.html";
+        }, 800);
     }
 }
 
