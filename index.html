@@ -16,8 +16,7 @@
         href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Amiri:wght@400;700&display=swap"
         rel="stylesheet">
 
-    <!-- خدعة الـ v=2 لإجبار الموبايل على التحديث -->
-    <link rel="stylesheet" href="style.css?v=2">
+    <link rel="stylesheet" href="style.css">
 </head>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0d6b50">
@@ -66,6 +65,9 @@
                         <a href="#plan" class="btn btn-primary">ابدأ رحلتي <span>←</span></a>
                         <a href="mushaf.html" class="btn btn-secondary">المصحف المصور</a>
                         <a href="#ask" class="btn btn-secondary">اسأل القرآن</a>
+                        <!-- الزر الجديد: أكمل القراءة -->
+                        <button onclick="Wardak.resumeReading()" class="btn btn-secondary"
+                            style="border-color: var(--gold); color: var(--gold-dark);">أكمل القراءة ⟳</button>
                     </div>
                 </div>
 
@@ -336,9 +338,9 @@
         <p id="toastMessage">تم الحفظ بنجاح</p>
     </div>
 
-    <!-- خدعة الـ v=2 لإجبار الموبايل على قراءة السكريبت الجديد -->
-    <script src="script.js?v=2"></script>
-    <script type="module" src="api.js?v=2"></script>
+    <!-- Scripts -->
+    <script src="script.js"></script>
+    <script type="module" src="api.js"></script>
 
     <!-- كود جلب السور وعرضها في الصفحة الرئيسية -->
     <script type="module">
@@ -352,7 +354,6 @@
             try {
                 const surahs = await getSurahs();
 
-                // دالة رسم السور
                 const renderGrid = (surahsList) => {
                     if (surahsList.length === 0) {
                         grid.innerHTML = '<div class="empty">لا توجد سورة بهذا الاسم...</div>';
@@ -373,10 +374,8 @@
                     `).join('');
                 };
 
-                // عرض كل السور في البداية
                 renderGrid(surahs);
 
-                // تشغيل البحث
                 if (searchInput) {
                     searchInput.addEventListener('input', (e) => {
                         const term = e.target.value.trim();
@@ -392,6 +391,7 @@
 
         document.addEventListener('DOMContentLoaded', loadSurahsToHome);
     </script>
+
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -399,37 +399,29 @@
             });
         }
     </script>
-    <!-- ================= الحل الإجباري لقائمة الموبايل ================= -->
-    <script>
-        window.addEventListener('load', function() {
-            var btn = document.getElementById('mobileMenuBtn');
-            var menu = document.getElementById('mobileMenu');
-            
-            if (btn && menu) {
-                // الخطوة دي بتمسح أي أكواد قديمة كانت معلقة على الزرار ومخلياه يعلق
-                var newBtn = btn.cloneNode(true);
-                btn.parentNode.replaceChild(newBtn, btn);
-                
-                // تشغيل القائمة بالقوة المباشرة
-                newBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    if (menu.style.display === 'block') {
-                        menu.style.display = 'none';
-                    } else {
-                        menu.style.display = 'block';
-                    }
-                });
 
-                // قفل القائمة لما المستخدم يختار حاجة منها
-                var links = menu.querySelectorAll('a');
-                links.forEach(function(link) {
-                    link.addEventListener('click', function() {
-                        menu.style.display = 'none';
-                    });
+    <!-- القائمة اللي شغالة معاك متلمستش -->
+    <script>
+        // تفعيل قائمة الموبايل بشكل مباشر وآمن
+        const mobileBtn = document.getElementById("mobileMenuBtn");
+        const mobileMenuBox = document.getElementById("mobileMenu");
+
+        if (mobileBtn && mobileMenuBox) {
+            mobileBtn.addEventListener("click", () => {
+                mobileMenuBox.classList.toggle("show");
+            });
+
+            // غلق القائمة عند الضغط على أي رابط بداخلها
+            mobileMenuBox.querySelectorAll("a").forEach(item => {
+                item.addEventListener("click", () => {
+                    mobileMenuBox.classList.remove("show");
                 });
-            }
-        });
+            });
+        }
     </script>
+
+    <!-- الإضافة الجديدة: مكتبة الاحتفال -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </body>
 
 </html>
