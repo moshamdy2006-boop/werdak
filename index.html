@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>وِردك | رحلتك اليومية مع القرآن</title>
+
+    <meta name="description" content="وِردك - منصة شخصية تساعدك على تنظيم وردك اليومي وختم القرآن الكريم.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Amiri:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d6b50">
+
+<body>
+
+    <!-- ================= HEADER ================= -->
+    <header class="header">
+        <div class="container nav">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">۞</span>
+                <span>وِردك</span>
+            </a>
+            <nav class="nav-links">
+                <a href="#home">الرئيسية</a>
+                <a href="#plan">خطتي</a>
+                <a href="mushaf.html">المصحف المصور</a>
+                <a href="#ask">اسأل القرآن</a>
+                <a href="#about">عن وِردك</a>
+            </nav>
+            <div class="header-actions">
+                <button class="theme-btn" id="themeBtn" title="الوضع الليلي">☾</button>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+            </div>
+        </div>
+
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="#home">الرئيسية</a>
+            <a href="#plan">خطتي</a>
+            <a href="mushaf.html">المصحف المصور</a>
+            <a href="#ask">اسأل القرآن</a>
+            <a href="#about">عن وِردك</a>
+        </div>
+    </header>
+
+    <!-- ================= HERO ================= -->
+    <main id="home">
+        <section class="hero">
+            <div class="hero-pattern"></div>
+            <div class="container hero-content">
+                <div class="hero-text">
+                    <div class="small-badge">✦ رحلتك مع القرآن تبدأ اليوم</div>
+                    <h1>اجعل لك <span>وِردًا</span> لا ينقطع</h1>
+                    <p>وِردك يساعدك على بناء عادة يومية مع القرآن، ويحوّل هدف ختم القرآن إلى رحلة واضحة خطوة بخطوة.</p>
+                    <div class="hero-buttons">
+                        <a href="#plan" class="btn btn-primary">ابدأ رحلتي <span>←</span></a>
+                        <a href="mushaf.html" class="btn btn-secondary">المصحف المصور</a>
+                        <a href="#ask" class="btn btn-secondary">اسأل القرآن</a>
+                    </div>
+                </div>
+
+                <div class="hero-card">
+                    <div class="card-top">
+                        <span>ورد اليوم</span>
+                        <span class="status-dot">● اليوم</span>
+                    </div>
+                    <div class="quran-icon">۞</div>
+                    <h3 id="heroSurah">ابدأ رحلتك</h3>
+                    <p id="heroAyah">اختر خطة الختم الخاصة بك</p>
+                    <div class="mini-progress">
+                        <div class="mini-progress-bar">
+                            <span id="heroProgress"></span>
+                        </div>
+                        <span id="heroProgressText">0%</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= STATS ================= -->
+        <section class="stats-section">
+            <div class="container stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📖</div>
+                    <div>
+                        <strong id="statDays">0</strong>
+                        <span>يوم مكتمل</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🔥</div>
+                    <div>
+                        <strong id="statStreak">0</strong>
+                        <span>يوم متتالي</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <div>
+                        <strong id="statGoal">--</strong>
+                        <span>خطة الختم</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div>
+                        <strong id="statProgress">0%</strong>
+                        <span>نسبة الإنجاز</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PLAN ================= -->
+        <section class="section" id="plan">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="section-label">خطتك</span>
+                    <h2>اختر رحلتك مع القرآن</h2>
+                    <p>اختر المدة التي تناسب وقتك، وسنحسب لك وردك اليومي تلقائيًا.</p>
+                </div>
+
+                <div class="plans-grid">
+                    <button class="plan-card" data-plan="30">
+                        <div class="plan-number">30</div>
+                        <div class="plan-info">
+                            <h3>ختمة في 30 يومًا</h3>
+                            <p>ورد يومي مكثف</p>
+                        </div>
+                        <span class="plan-arrow">←</span>
+                    </button>
+                    <button class="plan-card" data-plan="60">
+                        <div class="plan-number">60</div>
+                        <div class="plan-info">
+                            <h3>ختمة في 60 يومًا</h3>
+                            <p>ورد يومي متوسط</p>
+                        </div>
+                        <span class="plan-arrow">←</span>
+                    </button>
+                    <button class="plan-card" data-plan="90">
+                        <div class="plan-number">90</div>
+                        <div class="plan-info">
+                            <h3>ختمة في 90 يومًا</h3>
+                            <p>ورد يومي هادئ</p>
+                        </div>
+                        <span class="plan-arrow">←</span>
+                    </button>
+                </div>
+
+                <div class="current-plan" id="currentPlan">
+                    <div class="current-plan-header">
+                        <div>
+                            <span class="section-label">خطتك الحالية</span>
+                            <h3 id="currentPlanTitle">لم تختر خطة بعد</h3>
+                        </div>
+                        <button id="changePlanBtn" class="text-button">تغيير الخطة</button>
+                    </div>
+
+                    <div class="progress-area">
+                        <div class="progress-info">
+                            <span>التقدم في الختمة</span>
+                            <strong id="progressPercent">0%</strong>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-bottom">
+                            <span id="progressDays">0 من 0 يوم</span>
+                            <span id="remainingDays">متبقي 0 يوم</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TODAY ================= -->
+        <section class="section today-section">
+            <div class="container">
+                <div class="today-card">
+                    <div class="today-content">
+                        <div class="today-label">✦ ورد اليوم</div>
+                        <h2 id="todayTitle">ابدأ رحلتك باختيار خطة</h2>
+                        <p id="todayDescription">عندما تختار خطة، سيظهر هنا وردك اليومي تلقائيًا.</p>
+                        <div class="wird-details" id="wirdDetails">
+                            <div class="detail-item">
+                                <span>اليوم</span>
+                                <strong id="todayNumber">-</strong>
+                            </div>
+                            <div class="detail-item">
+                                <span>الورد</span>
+                                <strong id="todayPages">-</strong>
+                            </div>
+                            <div class="detail-item">
+                                <span>الحالة</span>
+                                <strong id="todayStatus">لم يبدأ</strong>
+                            </div>
+                        </div>
+                        <button class="complete-btn" id="completeBtn">
+                            <span>✓</span> أكملت وردي اليوم
+                        </button>
+                    </div>
+                    <div class="today-decoration">
+                        <div class="ornament">۞</div>
+                        <div class="decoration-line"></div>
+                        <p>وَرَتِّلِ الْقُرْآنَ تَرْتِيلًا</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= ASK ================= -->
+        <section class="section ask-section" id="ask">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="section-label">اسأل القرآن</span>
+                    <h2>ابحث عمّا يطمئن قلبك</h2>
+                    <p>اكتب شعورًا أو موضوعًا تريد آيات عنه، وسنقترح لك موضوعات قرآنية مناسبة.</p>
+                </div>
+                <div class="ask-box">
+                    <div class="ask-input-wrapper">
+                        <span class="search-icon">⌕</span>
+                        <input type="text" id="askInput" placeholder="مثال: أشعر بالقلق وأريد آيات عن الطمأنينة...">
+                        <button id="askBtn">بحث</button>
+                    </div>
+                    <div class="suggestions">
+                        <button class="suggestion">أشعر بالقلق</button>
+                        <button class="suggestion">أريد الصبر</button>
+                        <button class="suggestion">أحتاج الطمأنينة</button>
+                        <button class="suggestion">أريد التوبة</button>
+                        <button class="suggestion">أريد الشكر</button>
+                    </div>
+                    <div class="ask-result" id="askResult"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= FEATURES ================= -->
+        <section class="section features-section">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="section-label">لماذا وِردك؟</span>
+                    <h2>أكثر من مجرد قراءة</h2>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h3>هدف واضح</h3>
+                        <p>حدد المدة التي تريد ختم القرآن فيها واترك الباقي على وِردك.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔥</div>
+                        <h3>حافظ على الاستمرارية</h3>
+                        <p>تابع عدد الأيام المتتالية التي أتممت فيها وردك.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📈</div>
+                        <h3>تابع تقدمك</h3>
+                        <p>شاهد نسبة إنجازك والأيام المتبقية حتى إتمام الختمة.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💚</div>
+                        <h3>لا تقلق إذا فاتك يوم</h3>
+                        <p>يعيد وِردك توزيع المتبقي على الأيام القادمة بدلًا من إلغاء رحلتك.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= ABOUT ================= -->
+        <section class="section about-section" id="about">
+            <div class="container about-box">
+                <div class="about-icon">۞</div>
+                <div>
+                    <span class="section-label">عن وِردك</span>
+                    <h2>خطوة صغيرة كل يوم</h2>
+                    <p>وِردك فكرة بسيطة هدفها مساعدتك على الاستمرار في علاقتك اليومية مع القرآن. اختر هدفك، التزم بوردك،
+                        وشاهد رحلتك تكبر يومًا بعد يوم.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SURAHS ================= -->
+        <section class="section surahs-section">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="section-label">القرآن الكريم</span>
+                    <h2>السور</h2>
+                    <p>اختر السورة لفتح المصحف والقراءة والاستماع.</p>
+                </div>
+                <div class="surah-search">
+                    <input type="text" id="surahSearch" placeholder="ابحث عن سورة...">
+                </div>
+                <div class="surah-grid" id="surahGrid">
+                    <div class="empty">جاري تحميل السور...</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-brand">
+                <div class="logo">
+                    <span class="logo-icon">۞</span>
+                    <span>وِردك</span>
+                </div>
+                <p>رحلتك اليومية مع القرآن.</p>
+            </div>
+            <div class="footer-links">
+                <a href="#home">الرئيسية</a>
+                <a href="#plan">خطتي</a>
+                <a href="mushaf.html">المصحف المصور</a>
+                <a href="#ask">اسأل القرآن</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>جميع الحقوق محفوظة © <span id="year"></span> — وِردك</p>
+            <p class="creator">تصميم وتطوير <strong>مصطفى حمدي</strong></p>
+        </div>
+    </footer>
+
+    <!-- ================= TOAST ================= -->
+    <div class="toast" id="toast">
+        <span>✓</span>
+        <p id="toastMessage">تم الحفظ بنجاح</p>
+    </div>
+
+    <!-- Scripts Fixed Here -->
+    <script src="script.js"></script>
+    <script type="module" src="api.js"></script>
+
+    <!-- كود جلب السور وعرضها في الصفحة الرئيسية -->
+    <script type="module">
+        import { getSurahs } from './api.js';
+
+        async function loadSurahsToHome() {
+            const grid = document.getElementById('surahGrid');
+            if (!grid) return;
+
+            try {
+                const surahs = await getSurahs();
+                grid.innerHTML = surahs.map(s => `
+                    <a href="reader.html?surah=${s.number}" class="surah-card">
+                        <div class="surah-number-badge" style="width:40px;height:40px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;border-radius:10px;font-weight:bold;">
+                            ${s.number}
+                        </div>
+                        <div class="surah-main">
+                            <h3>${s.name}</h3>
+                            <p>${s.englishName}</p>
+                            <small>${s.revelationType === 'Meccan' ? 'مكية' : 'مدنية'} • ${s.numberOfAyahs} آية</small>
+                        </div>
+                        <div class="surah-open"><span>←</span> قراءة</div>
+                    </a>
+                `).join('');
+            } catch (error) {
+                grid.innerHTML = '<div class="empty error-box" style="color:red; text-align:center;">حدث خطأ أثناء تحميل السور. يرجى التحقق من اتصالك بالإنترنت.</div>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadSurahsToHome);
+
+    </script>
+    <script type="module">
+        import { getSurahs } from './api.js';
+
+        async function loadSurahsToHome() {
+            const grid = document.getElementById('surahGrid');
+            const searchInput = document.getElementById('surahSearch');
+            if (!grid) return;
+
+            try {
+                const surahs = await getSurahs();
+
+                // دالة رسم السور
+                const renderGrid = (surahsList) => {
+                    if (surahsList.length === 0) {
+                        grid.innerHTML = '<div class="empty">لا توجد سورة بهذا الاسم...</div>';
+                        return;
+                    }
+                    grid.innerHTML = surahsList.map(s => `
+                        <a href="reader.html?surah=${s.number}" class="surah-card">
+                            <div class="surah-number-badge" style="width:40px;height:40px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;border-radius:10px;font-weight:bold;">
+                                ${s.number}
+                            </div>
+                            <div class="surah-main">
+                                <h3>${s.name}</h3>
+                                <p>${s.englishName}</p>
+                                <small>${s.revelationType === 'Meccan' ? 'مكية' : 'مدنية'} • ${s.numberOfAyahs} آية</small>
+                            </div>
+                            <div class="surah-open"><span>←</span> قراءة</div>
+                        </a>
+                    `).join('');
+                };
+
+                // عرض كل السور في البداية
+                renderGrid(surahs);
+
+                // تشغيل البحث
+                if (searchInput) {
+                    searchInput.addEventListener('input', (e) => {
+                        const term = e.target.value.trim();
+                        const filtered = surahs.filter(s => s.name.includes(term));
+                        renderGrid(filtered);
+                    });
+                }
+
+            } catch (error) {
+                grid.innerHTML = '<div class="empty error-box" style="color:red; text-align:center;">حدث خطأ أثناء تحميل السور. يرجى التحقق من اتصالك بالإنترنت.</div>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadSurahsToHome);
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js');
+            });
+        }
+    </script>
+</body>
+
+</html>

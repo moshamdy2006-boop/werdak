@@ -1,0 +1,22 @@
+{
+    "name": "وِردك - رحلتك مع القرآن",
+    "short_name": "وِردك",
+    "description": "منصة شخصية لمتابعة الورد اليومي وختم القرآن الكريم.",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#f8faf9",
+    "theme_color": "#0d6b50",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
