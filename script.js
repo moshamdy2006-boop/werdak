@@ -155,7 +155,7 @@ function initializeYear() {
 }
 
 /* =========================================================
-   MOBILE MENU
+   MOBILE MENU (تم التحديث ليعمل بانتظام على الموبايل)
 ========================================================= */
 function initializeMobileMenu() {
     const button = document.getElementById("mobileMenuBtn");
@@ -507,7 +507,7 @@ function searchQuranTopic() {
                 اكتب شعورًا أو موضوعًا تريد البحث عنه أولًا.
             </div>
         `;
-        result.classList.add("show"); // تم إضافة أمر الإظهار
+        result.classList.add("show");
         return;
     }
 
@@ -529,7 +529,7 @@ function searchQuranTopic() {
         </div>
     `;
 
-    result.classList.add("show"); // تم إضافة أمر الإظهار
+    result.classList.add("show");
 
     setTimeout(() => {
         result.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -580,7 +580,6 @@ function detectTopic(text) {
    DARK MODE
 ========================================================= */
 function initializeTheme() {
-    // تم إضافة themeBtn و .theme-btn لكي يلتقط الأزرار في كل الصفحات
     const buttons = document.querySelectorAll("#themeBtn, .theme-btn, #themeToggle, #darkModeBtn, [data-theme-toggle], [data-action='theme']");
 
     const savedTheme = localStorage.getItem("wardakTheme");
