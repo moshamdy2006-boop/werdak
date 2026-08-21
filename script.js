@@ -155,7 +155,7 @@ function initializeYear() {
 }
 
 /* =========================================================
-   MOBILE MENU (تم حل المشكلة وتغيير الكلمة لـ active)
+   MOBILE MENU 
 ========================================================= */
 function initializeMobileMenu() {
     const button = document.getElementById("mobileMenuBtn");
