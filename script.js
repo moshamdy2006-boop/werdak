@@ -155,7 +155,7 @@ function initializeYear() {
 }
 
 /* =========================================================
-   MOBILE MENU 
+   MOBILE MENU
 ========================================================= */
 function initializeMobileMenu() {
     const button = document.getElementById("mobileMenuBtn");
@@ -166,12 +166,12 @@ function initializeMobileMenu() {
     }
 
     button.addEventListener("click", () => {
-        menu.classList.toggle("active");
+        menu.classList.toggle("show");
     });
 
     menu.querySelectorAll("a").forEach(link => {
         link.addEventListener("click", () => {
-            menu.classList.remove("active");
+            menu.classList.remove("show");
         });
     });
 }
@@ -378,6 +378,17 @@ function completeToday() {
 
     saveData(data);
     showToast("ما شاء الله، تم إكمال ورد اليوم ✓");
+    
+    // الإضافة الجديدة: إطلاق مؤثرات التهنئة عند إكمال الورد
+    if (typeof confetti === "function") {
+        confetti({
+            particleCount: 150,
+            spread: 90,
+            origin: { y: 0.6 },
+            colors: ['#0d6b50', '#c79b4b', '#ffffff']
+        });
+    }
+
     updateAll();
 
     if (data.completedDays.length >= data.plan) {
@@ -623,9 +634,21 @@ function showToast(message) {
 }
 
 /* =========================================================
+   الإضافة الجديدة: دالة إكمال القراءة
+========================================================= */
+function resumeReading() {
+    const lastSurah = localStorage.getItem('wardakLastSurah');
+    if (lastSurah) {
+        window.location.href = `reader.html?surah=${lastSurah}`;
+    } else {
+        showToast("لم تقم بفتح أي سورة مؤخراً للعودة إليها!");
+    }
+}
+
+/* =========================================================
    PUBLIC API
 ========================================================= */
 window.Wardak = {
     getData, saveData, selectPlan, completeToday, updateDashboard,
-    updateCurrentPlan, updateTodayWird, updateHero, toggleTheme, searchQuranTopic
+    updateCurrentPlan, updateTodayWird, updateHero, toggleTheme, searchQuranTopic, resumeReading
 };
