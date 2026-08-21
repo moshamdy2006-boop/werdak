@@ -16,7 +16,7 @@
         href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Amiri:wght@400;700&display=swap"
         rel="stylesheet">
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=4">
 </head>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0d6b50">
@@ -65,7 +65,7 @@
                         <a href="#plan" class="btn btn-primary">ابدأ رحلتي <span>←</span></a>
                         <a href="mushaf.html" class="btn btn-secondary">المصحف المصور</a>
                         <a href="#ask" class="btn btn-secondary">اسأل القرآن</a>
-                        <!-- الزر الجديد: أكمل القراءة -->
+                        <!-- زر أكمل القراءة -->
                         <button onclick="Wardak.resumeReading()" class="btn btn-secondary"
                             style="border-color: var(--gold); color: var(--gold-dark);">أكمل القراءة ⟳</button>
                     </div>
@@ -309,6 +309,10 @@
         </section>
     </main>
 
+    <!-- زر الرجوع لأعلى (مدمج بستايل مباشر عشان مايبوظش أي حاجة) -->
+    <button onclick="scrollToTop()" id="scrollTopBtn" title="الرجوع للأعلى"
+        style="display:none; position:fixed; bottom:30px; left:30px; z-index:99; font-size:18px; background:var(--primary); color:white; border:none; width:45px; height:45px; border-radius:50%; box-shadow:0 4px 15px rgba(13,107,80,0.4); cursor:pointer;">↑</button>
+
     <!-- ================= FOOTER ================= -->
     <footer class="footer">
         <div class="container footer-content">
@@ -339,10 +343,10 @@
     </div>
 
     <!-- Scripts -->
-    <script src="script.js"></script>
+    <script src="script.js?v=4"></script>
     <script type="module" src="api.js"></script>
 
-    <!-- كود جلب السور وعرضها في الصفحة الرئيسية -->
+    <!-- كود جلب السور -->
     <script type="module">
         import { getSurahs } from './api.js';
 
@@ -400,27 +404,42 @@
         }
     </script>
 
-    <!-- القائمة اللي شغالة معاك متلمستش -->
+    <!-- كود قائمة الموبايل النظيف -->
     <script>
-        // تفعيل قائمة الموبايل بشكل مباشر وآمن
-        const mobileBtn = document.getElementById("mobileMenuBtn");
-        const mobileMenuBox = document.getElementById("mobileMenu");
+        document.addEventListener('DOMContentLoaded', function () {
+            const btn = document.getElementById('mobileMenuBtn');
+            const menu = document.getElementById('mobileMenu');
 
-        if (mobileBtn && mobileMenuBox) {
-            mobileBtn.addEventListener("click", () => {
-                mobileMenuBox.classList.toggle("show");
-            });
-
-            // غلق القائمة عند الضغط على أي رابط بداخلها
-            mobileMenuBox.querySelectorAll("a").forEach(item => {
-                item.addEventListener("click", () => {
-                    mobileMenuBox.classList.remove("show");
+            if (btn && menu) {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    menu.classList.toggle('active');
                 });
-            });
+
+                menu.querySelectorAll('a').forEach(function (link) {
+                    link.addEventListener('click', function () {
+                        menu.classList.remove('active');
+                    });
+                });
+            }
+        });
+
+        // زر الرجوع لأعلى
+        window.onscroll = function () {
+            let mybutton = document.getElementById("scrollTopBtn");
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                mybutton.style.display = "block";
+            } else {
+                mybutton.style.display = "none";
+            }
+        };
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
 
-    <!-- الإضافة الجديدة: مكتبة الاحتفال -->
+    <!-- مكتبة الاحتفال -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </body>
 
