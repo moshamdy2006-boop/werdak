@@ -155,7 +155,7 @@ function initializeYear() {
 }
 
 /* =========================================================
-   MOBILE MENU (تم التحديث ليعمل بانتظام على الموبايل)
+   MOBILE MENU (تم حل المشكلة وتغيير الكلمة لـ active)
 ========================================================= */
 function initializeMobileMenu() {
     const button = document.getElementById("mobileMenuBtn");
@@ -166,12 +166,12 @@ function initializeMobileMenu() {
     }
 
     button.addEventListener("click", () => {
-        menu.classList.toggle("show");
+        menu.classList.toggle("active");
     });
 
     menu.querySelectorAll("a").forEach(link => {
         link.addEventListener("click", () => {
-            menu.classList.remove("show");
+            menu.classList.remove("active");
         });
     });
 }
