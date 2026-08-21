@@ -16,13 +16,11 @@
         href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Amiri:wght@400;700&display=swap"
         rel="stylesheet">
 
-    <link rel="stylesheet" href="style.css?v=6">
+    <link rel="stylesheet" href="style.css?v=7">
 
-    <!-- ستايل إظهار الروابط العادية على الموبايل وإلغاء القائمة المنسدلة -->
+    <!-- ستايل إظهار الروابط العادية على الموبايل -->
     <style>
         @media (max-width: 700px) {
-
-            /* إظهار الروابط وتصغير حجمها قليلاً لتناسب الشاشة */
             .nav-links {
                 display: flex !important;
                 flex-wrap: wrap;
@@ -32,7 +30,6 @@
                 width: 100%;
             }
 
-            /* إعادة ترتيب الهيدر ليكون اللوجو فوق والروابط تحته */
             .nav {
                 height: auto !important;
                 flex-direction: column;
@@ -41,16 +38,10 @@
                 position: relative;
             }
 
-            /* تثبيت زر الوضع الليلي في أعلى اليسار */
             .header-actions {
                 position: absolute;
                 top: 15px;
                 left: 15px;
-            }
-
-            /* إخفاء زر القائمة نهائياً */
-            .mobile-menu-btn {
-                display: none !important;
             }
         }
 
@@ -98,7 +89,6 @@
                 <span>وِردك</span>
             </a>
 
-            <!-- الروابط ستظهر الآن على الموبايل واللاب توب معاً -->
             <nav class="nav-links">
                 <a href="#home">الرئيسية</a>
                 <a href="#plan">خطتي</a>
@@ -109,8 +99,10 @@
 
             <div class="header-actions">
                 <button class="theme-btn" id="themeBtn" title="الوضع الليلي">☾</button>
+                <!-- تم مسح زرار الثلاث شرط من هنا تماماً -->
             </div>
         </div>
+        <!-- تم مسح قائمة الموبايل المنسدلة من هنا تماماً -->
     </header>
 
     <!-- ================= HERO ================= -->
@@ -402,7 +394,7 @@
     </div>
 
     <!-- Scripts -->
-    <script src="script.js?v=6"></script>
+    <script src="script.js?v=7"></script>
     <script type="module" src="api.js"></script>
 
     <!-- كود جلب السور -->
@@ -464,7 +456,7 @@
     </script>
 
     <script>
-        // زر الرجوع لأعلى
+        // زر الرجوع لأعلى 
         window.onscroll = function () {
             let mybutton = document.getElementById("scrollTopBtn");
             if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
